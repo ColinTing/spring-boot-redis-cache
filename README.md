@@ -1,2 +1,5 @@
 # spring-boot-redis-cache
-Spring Boot &amp; Redis （Jedis 缓存） Demo
+
+Spring Boot & Redis （使用Jedis 存储缓存）demo
+
+
