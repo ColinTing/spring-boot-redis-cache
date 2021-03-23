@@ -1,13 +1,12 @@
 package com.colinting.springbootrediscache;
 
-import com.colinting.springbootrediscache.config.RedisConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 
 @SpringBootApplication
-@EnableConfigurationProperties(RedisConfig.class)
+@ConfigurationPropertiesScan("com.colinting.springbootrediscache.config")
 public class SpringBootRedisCacheApplication {
 
 

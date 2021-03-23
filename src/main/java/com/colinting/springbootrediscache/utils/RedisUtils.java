@@ -37,13 +37,13 @@ public class RedisUtils {
     public JedisPoolConfig jedisPoolConfig() {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         // 最大连接数
-        jedisPoolConfig.setMaxTotal(redisConfig.getMaxActive());
+        jedisPoolConfig.setMaxTotal(redisConfig.getJedisPool().getMaxActive());
         // 当池内没有可用连接时，最大等待时间
-        jedisPoolConfig.setMaxWaitMillis(redisConfig.getMaxWaitMillis());
+        jedisPoolConfig.setMaxWaitMillis(redisConfig.getJedisPool().getMaxWaitMillis());
         // 最大空闲连接数
-        jedisPoolConfig.setMinIdle(redisConfig.getMaxIdle());
+        jedisPoolConfig.setMinIdle(redisConfig.getJedisPool().getMaxIdle());
         // 最小空闲连接数
-        jedisPoolConfig.setMinIdle(redisConfig.getMinIdle());
+        jedisPoolConfig.setMinIdle(redisConfig.getJedisPool().getMinIdle());
         // 其他属性可以自行添加
         return jedisPoolConfig;
     }

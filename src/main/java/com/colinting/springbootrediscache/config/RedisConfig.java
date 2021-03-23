@@ -1,11 +1,12 @@
 package com.colinting.springbootrediscache.config;
 
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = "redis")
+@ConfigurationProperties(prefix = "spring.redis")
 public final class RedisConfig {
 
     private final int database;
@@ -18,13 +19,7 @@ public final class RedisConfig {
 
     private final int timeout;
 
-    private final int maxActive;
-
-    private final long maxWaitMillis;
-
-    private final int maxIdle;
-
-    private final int minIdle;
+    private final JedisPool jedisPool;
 
     public RedisConfig(
             int database,
@@ -32,10 +27,7 @@ public final class RedisConfig {
             int port,
             String password,
             int timeout,
-            int maxActive,
-            long maxWaitMillis,
-            int maxIdle,
-            int minIdle) {
+            JedisPool jedisPool) {
         this.database = database;
         if (host == null) {
             throw new NullPointerException("Null host");
@@ -47,12 +39,11 @@ public final class RedisConfig {
         }
         this.password = password;
         this.timeout = timeout;
-        this.maxActive = maxActive;
-        this.maxWaitMillis = maxWaitMillis;
-        this.maxIdle = maxIdle;
-        this.minIdle = minIdle;
+        if (jedisPool == null) {
+            throw new NullPointerException("Null pool");
+        }
+        this.jedisPool = jedisPool;
     }
-
 
 
     public int getDatabase() {
@@ -80,23 +71,8 @@ public final class RedisConfig {
     }
 
 
-    public int getMaxActive() {
-        return maxActive;
-    }
-
-
-    public long getMaxWaitMillis() {
-        return maxWaitMillis;
-    }
-
-
-    public int getMaxIdle() {
-        return maxIdle;
-    }
-
-
-    public int getMinIdle() {
-        return minIdle;
+    public JedisPool getJedisPool() {
+        return jedisPool;
     }
 
     @Override
@@ -107,10 +83,7 @@ public final class RedisConfig {
                 + "port=" + port + ", "
                 + "password=" + password + ", "
                 + "timeout=" + timeout + ", "
-                + "maxActive=" + maxActive + ", "
-                + "maxWaitMillis=" + maxWaitMillis + ", "
-                + "maxIdle=" + maxIdle + ", "
-                + "minIdle=" + minIdle
+                + "jedisPool=" + jedisPool
                 + "}";
     }
 
@@ -126,10 +99,7 @@ public final class RedisConfig {
                     && this.port == that.getPort()
                     && this.password.equals(that.getPassword())
                     && this.timeout == that.getTimeout()
-                    && this.maxActive == that.getMaxActive()
-                    && this.maxWaitMillis == that.getMaxWaitMillis()
-                    && this.maxIdle == that.getMaxIdle()
-                    && this.minIdle == that.getMinIdle();
+                    && this.jedisPool.equals(that.getJedisPool());
         }
         return false;
     }
@@ -148,14 +118,90 @@ public final class RedisConfig {
         h$ *= 1000003;
         h$ ^= timeout;
         h$ *= 1000003;
-        h$ ^= maxActive;
-        h$ *= 1000003;
-        h$ ^= (int) ((maxWaitMillis >>> 32) ^ maxWaitMillis);
-        h$ *= 1000003;
-        h$ ^= maxIdle;
-        h$ *= 1000003;
-        h$ ^= minIdle;
+        h$ ^= jedisPool.hashCode();
         return h$;
+    }
+
+    public static class JedisPool {
+
+        private final int maxActive;
+
+        private final long maxWaitMillis;
+
+        private final int maxIdle;
+
+        private final int minIdle;
+
+        public JedisPool(
+                int maxActive,
+                long maxWaitMillis,
+                int maxIdle,
+                int minIdle) {
+            this.maxActive = maxActive;
+            this.maxWaitMillis = maxWaitMillis;
+            this.maxIdle = maxIdle;
+            this.minIdle = minIdle;
+        }
+
+
+        public int getMaxActive() {
+            return maxActive;
+        }
+
+
+        public long getMaxWaitMillis() {
+            return maxWaitMillis;
+        }
+
+
+        public int getMaxIdle() {
+            return maxIdle;
+        }
+
+
+        public int getMinIdle() {
+            return minIdle;
+        }
+
+        @Override
+        public String toString() {
+            return "PoolConfig{"
+                    + "maxActive=" + maxActive + ", "
+                    + "maxWaitMillis=" + maxWaitMillis + ", "
+                    + "maxIdle=" + maxIdle + ", "
+                    + "minIdle=" + minIdle
+                    + "}";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (o instanceof JedisPool) {
+                JedisPool that = (JedisPool) o;
+                return this.maxActive == that.getMaxActive()
+                        && this.maxWaitMillis == that.getMaxWaitMillis()
+                        && this.maxIdle == that.getMaxIdle()
+                        && this.minIdle == that.getMinIdle();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int h$ = 1;
+            h$ *= 1000003;
+            h$ ^= maxActive;
+            h$ *= 1000003;
+            h$ ^= (int) ((maxWaitMillis >>> 32) ^ maxWaitMillis);
+            h$ *= 1000003;
+            h$ ^= maxIdle;
+            h$ *= 1000003;
+            h$ ^= minIdle;
+            return h$;
+        }
+
     }
 
 }

@@ -19,6 +19,7 @@ import java.time.Duration;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ConfigurationPropertiesScan("com.colinting.springbootrediscache.config")
 class SpringBootRedisCacheApplicationTests {
 
     @Autowired
