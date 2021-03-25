@@ -80,9 +80,12 @@ public class RedisUtils {
     @Bean
     RedisTemplate<String, Serializable> redisTemplate() {
         RedisTemplate<String, Serializable> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory(jedisPoolConfig()));
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setConnectionFactory(jedisConnectionFactory(jedisPoolConfig()));
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
 
