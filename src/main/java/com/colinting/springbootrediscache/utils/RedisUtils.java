@@ -1,9 +1,9 @@
 package com.colinting.springbootrediscache.utils;
 
 
-
-
 import com.colinting.springbootrediscache.config.RedisConfig;
+import org.redisson.Redisson;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -88,6 +88,21 @@ public class RedisUtils {
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
+
+
+    /**
+     *
+     * @return Redisson分布式锁对象
+     */
+    @Bean
+    public Redisson redisson() {
+        Config config = new Config();
+        config.useSingleServer().
+                setAddress("redis://"+redisConfig.getHost()+":"+redisConfig.getPort()).
+                setDatabase(redisConfig.getDatabase()).
+                setPassword(redisConfig.getPassword());
+        return (Redisson) Redisson.create(config);
     }
 
 }
