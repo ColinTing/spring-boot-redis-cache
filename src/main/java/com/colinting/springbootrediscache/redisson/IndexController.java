@@ -38,7 +38,12 @@ public class IndexController {
 
         try {
             redissonLock.lock();
-            int stock = Integer.parseInt(stringRedisTemplate.opsForValue().get("stock"));
+            String v = stringRedisTemplate.opsForValue().get("stock");
+            if (v == null) {
+                System.out.println("扣减失败，没有初始化库存值");
+                return "end";
+            }
+            int stock = Integer.parseInt(v);
             if (stock > 0) {
                 int realStock = stock - 1;
                 stringRedisTemplate.opsForValue().set("stock", realStock + "");

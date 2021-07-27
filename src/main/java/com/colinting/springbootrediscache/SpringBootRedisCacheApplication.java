@@ -14,7 +14,4 @@ public class SpringBootRedisCacheApplication {
         SpringApplication.run(SpringBootRedisCacheApplication.class, args);
     }
 
-
-
-
 }
